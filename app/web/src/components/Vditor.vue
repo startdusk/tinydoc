@@ -1,7 +1,11 @@
 <template>
   <div id="vditor" />
 </template>
-
+<script lang="ts">
+export default {
+  name: "Vditor",
+};
+</script>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import Vditor from "vditor";
@@ -16,7 +20,7 @@ const { markdown } = defineProps<Props>();
 
 const vditor = ref<Vditor | null>(null);
 
-onMounted(async () => {
+onMounted(() => {
   vditor.value = new Vditor("vditor", {
     height: window.innerHeight,
     cache: { enable: false },
@@ -48,7 +52,7 @@ onMounted(async () => {
         lineNumber: true,
       },
     },
-    after: async () => {
+    after: () => {
       // vditor.value is a instance of Vditor now and thus can be safely used here
       vditor.value!.setValue(markdown);
       const previewBtn = $("button[data-type='preview']");
