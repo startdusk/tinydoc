@@ -7,32 +7,43 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, watchEffect, toRefs } from "vue";
 import Vditor from "vditor";
 import $ from "jquery";
 import "vditor/dist/index.css";
 
 interface Props {
   markdown: string;
+  outlinePosition: "left" | "right";
 }
-
-const { markdown } = defineProps<Props>();
+const props = defineProps<Props>();
+const { markdown, outlinePosition } = toRefs(props);
 
 const vditor = ref<Vditor | null>(null);
 
 onMounted(() => {
+  renderMarkdown(markdown.value, outlinePosition.value);
+});
+
+watch(
+  () => markdown.value,
+  (newVal, oldVal) => {
+    renderMarkdown(newVal, outlinePosition.value);
+  }
+);
+
+const renderMarkdown = (
+  markdown: string,
+  outlinePosition: "left" | "right"
+) => {
   vditor.value = new Vditor("vditor", {
-    height: window.innerHeight,
+    height: window.innerHeight - 17,
     cache: { enable: false },
     value: "",
     toolbar: [
       {
         name: "more",
         toolbar: [
-          "code-theme",
-          "content-theme",
-          "export",
-          "outline",
           "preview",
         ],
       },
@@ -42,7 +53,7 @@ onMounted(() => {
     },
     outline: {
       enable: true,
-      position: "left",
+      position: outlinePosition,
     },
     preview: {
       mode: "editor",
@@ -59,7 +70,7 @@ onMounted(() => {
       previewBtn.trigger("click");
     },
   });
-});
+};
 </script>
 <style scoped>
 :global(.vditor-toolbar--hide) {
