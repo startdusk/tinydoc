@@ -10,7 +10,7 @@
       <div class="basis-1/5">
         <Catalogue :data="data" @click="handleCatalogueNodeClick" />
       </div>
-      <div class="basis-4/5">
+      <div v-loading.lock="vditorLoading" class="basis-4/5">
         <Vditor :markdown="markdown" outlinePosition="right" />
       </div>
     </div>
@@ -18,28 +18,18 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted, watch } from "vue";
+import { ElMessage } from "element-plus";
+import { useRoute } from "vue-router";
+
 import Vditor from "../components/vditor/Vditor.vue";
 import Catalogue from "../components/catalogue/Catalogue.vue";
 import Header from "../components/header/Header.vue";
 import { Tree } from "../components/catalogue";
-import { ref, onMounted } from "vue";
-import { ElMessage } from "element-plus";
 
 // ===========================================================================
-// On mounted
-onMounted(() => {
-  openFullScreen();
-});
-
-// ===========================================================================
-// Loading
-const fullscreenLoading = ref(false);
-const openFullScreen = () => {
-  fullscreenLoading.value = true;
-  setTimeout(() => {
-    fullscreenLoading.value = false;
-  }, 1500);
-};
+// Route
+const route = useRoute();
 
 const markdowns = [
   `
@@ -74,14 +64,45 @@ const markdowns = [
 ];
 
 const markdown = ref("");
-markdown.value = markdowns[0];
+// ===========================================================================
+// On mounted
+onMounted(() => {
+  const idRaw = route.params.id as string;
+  const docId = parseInt(idRaw);
+  console.log(`docId = ${docId}`);
+  markdown.value = markdowns[docId % markdowns.length];
+  openFullScreen();
+});
 
+// ===========================================================================
+// Loading
+const fullscreenLoading = ref(false);
+const openFullScreen = () => {
+  fullscreenLoading.value = true;
+  setTimeout(() => {
+    fullscreenLoading.value = false;
+  }, 1500);
+};
+
+const vditorLoading = ref(false);
+const openVditorScreen = () => {
+  vditorLoading.value = true;
+  setTimeout(() => {
+    vditorLoading.value = false;
+  }, 1500);
+};
+
+let currentDocId: number = 0;
 const handleCatalogueNodeClick = (node: Tree) => {
   if (node.fileType != 1) {
     return;
   }
+  if (currentDocId === node.id) {
+    return;
+  }
+  currentDocId = node.id;
   markdown.value = markdowns[node.id];
-  openFullScreen();
+  openVditorScreen();
 };
 
 const data = ref<Tree[]>([]);

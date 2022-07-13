@@ -1,45 +1,51 @@
 <template>
-  <div>Tiny doc home page</div>
+  <div class="text-center font-bold text-4xl font-sans mt-5">
+    Tiny doc home page
+  </div>
   <el-divider />
-  <el-row>
-    <el-col
-      v-for="(o, index) in 4"
-      :key="o"
-      :span="8"
-      :offset="index > 0 ? 2 : 0"
-    >
-      <el-card
-        shadow="hover"
-        :body-style="{ padding: '0px', cursor: 'pointer' }"
+  <div class="m-5">
+    <el-row :gutter="12">
+      <el-col
+        v-for="(o, index) in 60"
+        :key="o"
+        :span="3"
+        :offset="0.5"
+        :style="{ marginBottom: '10px' }"
       >
-        <div @click="handleClick">
-          <img
-            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-            class="image"
-          />
-          <div style="padding: 14px">
-            <span>Yummy hamburger - {{ index }}</span>
+        <el-card
+          shadow="hover"
+          :body-style="{ padding: '0px', cursor: 'pointer' }"
+        >
+          <div
+            class="flex flex-col items-center p-4"
+            @click="handleClick(index)"
+          >
+            <img
+              src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+              class="image"
+            />
+            <span>Yummy Document - {{ index }}</span>
             <div class="bottom">
               <time class="time">{{ currentDate }}</time>
-              <el-button text class="button">Reading</el-button>
             </div>
           </div>
-        </div>
-      </el-card>
-    </el-col>
-  </el-row>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-const currentDate = ref(new Date());
+import { routing } from "../utils/routing";
+
+const currentDate = ref(new Date().toDateString());
 const router = useRouter();
 
-const handleClick = () => {
-  const docId = 123;
-  router.push({ name: 'detail', params: { id: docId } });
+const handleClick = (docId: number) => {
+  router.push(routing.detail({id: docId}));
 };
 </script>
 
@@ -57,14 +63,9 @@ const handleClick = () => {
   align-items: center;
 }
 
-.button {
-  padding: 0;
-  min-height: auto;
-}
-
 .image {
-  width: 50px;
-  height: 50px;
+  width: 180px;
+  height: 200px;
   display: block;
 }
 </style>
