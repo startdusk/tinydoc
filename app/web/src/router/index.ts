@@ -10,8 +10,8 @@ const routes: RouteRecordRaw[] = [
 		component: HomeView,
 	},
 	{
-		path: '/detail/:id',
-		name: 'detail',
+		path: '/details/:id',
+		name: 'details',
 		component: DetailView
 	},
 	{
@@ -26,3 +26,5 @@ const router = createRouter({
 });
 
 export default router;
+
+

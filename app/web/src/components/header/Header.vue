@@ -1,17 +1,13 @@
 <template>
   <div class="flex flex-row">
     <div class="basis-1/5 flex flex-row justify-center items-center">
-      <input
-        class="border-solid border-2 bg-slate-50 caret-pink-500"
-        type="text"
+      <el-page-header @back="handleBackBtnClick" />
+      <el-input
         v-model="searchText"
+        placeholder="Please input a search key"
+        clearable
       />
-      <button
-        @click="handleClick"
-        class="bg-cyan-500 hover:bg-cyan-600 rounded-none font-sans"
-      >
-        Search
-      </button>
+      <el-button @click="handleSearchBtnClick"> Search </el-button>
     </div>
     <div class="basis-4/5 flex flex-col items-center">
       <div class="font-sans text-4xl">{{ title }}</div>
@@ -28,7 +24,7 @@ export default {
 };
 </script>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, toRefs } from "vue";
 
 interface Props {
@@ -39,11 +35,19 @@ interface Props {
 
 const props = defineProps<Props>();
 const { title, version, releaseTime } = toRefs(props);
-
-const emit = defineEmits<{ (e: "click", text: string): void }>();
 const searchText = ref("");
-const handleClick = () => {
-  emit("click", searchText.value);
+
+const emit = defineEmits<{
+  (e: "click-search", text: string): void;
+  (e: "click-back"): void;
+}>();
+
+const handleSearchBtnClick = () => {
+  emit("click-search", searchText.value);
+};
+
+const handleBackBtnClick = () => {
+  emit("click-back");
 };
 </script>
 

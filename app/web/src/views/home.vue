@@ -45,7 +45,7 @@ const currentDate = ref(new Date().toDateString());
 const router = useRouter();
 
 const handleClick = (docId: number) => {
-  router.push(routing.detail({id: docId}));
+  router.push(routing.detail({ id: docId }));
 };
 </script>
 

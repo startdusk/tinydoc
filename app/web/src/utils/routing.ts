@@ -6,10 +6,16 @@ export namespace routing {
   }
   export function detail(params: DetailOpts): RouteLocationRaw {
     return {
-      name: "detail",
+      name: "details",
       params: {
         id: params.id,
       },
     };
+  }
+
+  export function home(): RouteLocationRaw {
+    return {
+      name: "home"
+    }
   }
 }

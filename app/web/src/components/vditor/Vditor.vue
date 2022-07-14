@@ -6,7 +6,7 @@ export default {
   name: "Vditor",
 };
 </script>
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, onMounted, watch } from "vue";
 import Vditor from "vditor";
 import $ from "jquery";
@@ -19,8 +19,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
-const vditor = ref<Vditor | null>(null);
 
 onMounted(() => {
   renderMarkdown({
@@ -40,7 +38,7 @@ watch(
 );
 
 const renderMarkdown = (config: VditorConfig) => {
-  vditor.value = new Vditor("vditor", {
+  const vditor = new Vditor("vditor", {
     height: window.innerHeight - 90,
     cache: { enable: false },
     value: "",
@@ -66,8 +64,7 @@ const renderMarkdown = (config: VditorConfig) => {
       },
     },
     after: () => {
-      // vditor.value is a instance of Vditor now and thus can be safely used here
-      vditor.value!.setValue(config.markdown);
+      vditor.setValue(config.markdown);
       const previewBtn = $("button[data-type='preview']");
       previewBtn.trigger("click");
     },

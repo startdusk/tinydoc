@@ -1,14 +1,18 @@
 <template>
   <div v-loading.fullscreen.lock="fullscreenLoading" class="flex flex-col p-3">
     <Header
-      @click="handleSearchBtnClick"
+      @click-search="handleSearchBtnClick"
+      @click-back="handleBackBtnClick"
       :title="title"
       :version="version"
       :releaseTime="releaseTime"
     />
     <div class="flex flex-row">
       <div class="basis-1/5">
-        <Catalogue :data="data" @click="handleCatalogueNodeClick" />
+        <Catalogue
+          @click="handleCatalogueNodeClick"
+          @load="handleCatalogueLoadNodeClick"
+        />
       </div>
       <div v-loading.lock="vditorLoading" class="basis-4/5">
         <Vditor :markdown="markdown" outlinePosition="right" />
@@ -18,18 +22,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import Vditor from "../components/vditor/Vditor.vue";
 import Catalogue from "../components/catalogue/Catalogue.vue";
 import Header from "../components/header/Header.vue";
 import { Tree } from "../components/catalogue";
 
+import type Node from "element-plus/es/components/tree/src/model/node";
+import { routing } from "../utils/routing";
+
 // ===========================================================================
 // Route
 const route = useRoute();
+const router = useRouter();
 
 const markdowns = [
   `
@@ -66,6 +74,9 @@ const markdowns = [
 const markdown = ref("");
 // ===========================================================================
 // On mounted
+const title = ref("This is a header");
+const version = ref("V1.01");
+const releaseTime = ref("2022-07-12 10:46:32");
 onMounted(() => {
   const idRaw = route.params.id as string;
   const docId = parseInt(idRaw);
@@ -105,71 +116,61 @@ const handleCatalogueNodeClick = (node: Tree) => {
   openVditorScreen();
 };
 
-const data = ref<Tree[]>([]);
-data.value = [
+const levelData1: Tree[] = [
   {
     id: 1,
     paraentId: 0,
     label: "Level one 1",
     fileType: 2,
-    children: [
-      {
-        id: 2,
-        paraentId: 1,
-        label: "Level two 1-1",
-        fileType: 2,
-        children: [
-          {
-            id: 3,
-            paraentId: 2,
-            fileType: 1,
-            label: "Level three 1-1-1",
-          },
-        ],
-      },
-    ],
+    leaf: true,
   },
   {
-    id: 4,
+    id: 2,
     paraentId: 0,
     label: "Level one 2",
     fileType: 2,
-    children: [
-      {
-        id: 5,
-        paraentId: 4,
-        label: "Level two 2-1",
-        fileType: 2,
-        children: [
-          {
-            id: 6,
-            paraentId: 5,
-            label: "Level three 2-1-1",
-            fileType: 1,
-          },
-        ],
-      },
-      {
-        id: 7,
-        paraentId: 4,
-        label: "Level two 2-2",
-        fileType: 2,
-        children: [
-          {
-            id: 8,
-            paraentId: 7,
-            label: "Level three 2-2-1",
-            fileType: 1,
-          },
-        ],
-      },
-    ],
+    children: [],
   },
 ];
 
-const title = ref("This is a header");
-const version = ref("V1.01");
-const releaseTime = ref("2022-07-12 10:46:32");
+const levelData2: Tree[] = [
+  {
+    id: 5,
+    paraentId: 4,
+    label: "Level two 2-1",
+    fileType: 2,
+    children: [],
+  },
+];
+
+const levelData3: Tree[] = [
+  {
+    id: 6,
+    paraentId: 5,
+    label: "Level three 2-1-1",
+    fileType: 1,
+    leaf: true,
+  },
+];
+
+const handleCatalogueLoadNodeClick = (
+  node: Node,
+  resolve: (data: Tree[]) => void
+) => {
+  if (node.level === 0) {
+    return resolve(levelData1);
+  }
+  if (!node.data.children) {
+    return resolve([]);
+  }
+
+  if (node.data.id === 2) {
+    return resolve(levelData2);
+  }
+  if (node.data.id === 5) {
+    return resolve(levelData3);
+  }
+};
 
 // ===========================================================================
 // Click search button
@@ -186,5 +187,11 @@ const handleSearchBtnClick = (text: string) => {
     type: "warning",
     showClose: true,
   });
+};
+
+// ===========================================================================
+// Click back button
+const handleBackBtnClick = () => {
+  router.push(routing.home());
 };
 </script>

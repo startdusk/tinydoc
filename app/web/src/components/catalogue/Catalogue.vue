@@ -1,6 +1,12 @@
 <template>
   <div :style="{ height: height, overflowY: 'auto' }">
-    <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick">
+    <el-tree
+      :props="defaultProps"
+      @node-click="handleNodeClick"
+      :load="HandleLoadNodeClick"
+      lazy
+      highlight-current
+    >
       <template #default="{ node, data }">
         <template v-if="data.fileType == 2">
           <el-icon color="#409EFC" class="no-inherit"><Folder /></el-icon>
@@ -8,7 +14,7 @@
         <template v-else>
           <el-icon><Document /></el-icon>
         </template>
-        <span class="node-label">{{ node.label }}</span>
+        <span class="ml-1">{{ node.label }}</span>
       </template>
     </el-tree>
   </div>
@@ -20,23 +26,27 @@ export default {
 };
 </script>
 
-<script setup lang="ts">
-import { toRefs } from "vue";
+<script lang="ts" setup>
+import type Node from "element-plus/es/components/tree/src/model/node";
+
 import { Tree } from "./index";
-
-interface Props {
-  data: Tree[];
-}
-
-const props = defineProps<Props>();
-const { data } = toRefs(props);
 
 const height = `${window.innerHeight - 90}px`;
 
-const emit = defineEmits<{ (e: "click", node: Tree): void }>();
+const emit = defineEmits<{
+  (e: "click", node: Tree): void;
+  (e: "load", node: Node, resolve: (data: Tree[]) => void): void;
+}>();
 
 const handleNodeClick = (node: Tree) => {
   emit("click", node);
+};
+
+const HandleLoadNodeClick = (node: Node, resolve: (data: Tree[]) => void) => {
+  if (node.data.fileType == 1) {
+    return;
+  }
+  emit("load", node, resolve);
 };
 
 const defaultProps = {
@@ -45,11 +55,6 @@ const defaultProps = {
   children: "children",
   docType: 2,
   label: "label",
+  isLeaf: "leaf",
 };
 </script>
-
-<style scoped>
-.node-label {
-  margin-left: 5px;
-}
-</style>

@@ -2,6 +2,8 @@ export interface Tree {
 	id: number;
 	paraentId: number;
 	label: string;
-	fileType: number;
+	// 1=file 2=folder
+	fileType: 1 | 2;
 	children?: Tree[];
+	leaf?: boolean
 }
