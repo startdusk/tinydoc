@@ -1,6 +1,6 @@
 <template>
   <div v-loading.fullscreen.lock="fullscreenLoading" class="flex flex-col p-3">
-    <Header
+    <DetailHeader
       @click-search="handleSearchBtnClick"
       @click-back="handleBackBtnClick"
       :title="title"
@@ -28,7 +28,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import Vditor from "../components/vditor/Vditor.vue";
 import Catalogue from "../components/catalogue/Catalogue.vue";
-import Header from "../components/header/Header.vue";
+import DetailHeader from "../components/header/DetailHeader.vue";
 import { Tree } from "../components/catalogue";
 
 import type Node from "element-plus/es/components/tree/src/model/node";
