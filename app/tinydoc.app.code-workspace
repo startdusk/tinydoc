@@ -10,5 +10,7 @@
 		"path": "web"
 	}
 ],
-  "settings": {}
+"settings": {
+	"makefile.extensionOutputFolder": "./.vscode"
+}
 }
